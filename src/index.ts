@@ -5,11 +5,12 @@ import { SequelizeService } from "./services/sequelize.service";
 
 import { buildFilter } from "./utils";
 
-import { queryParser } from "./middlewares/parser";
+import { queryParser, formParser } from "./middlewares/parser";
 
 import { isArray, isObject, isString } from "./utils/is";
 
 import { userRouter } from "./routes/user.router";
+import { authRouter } from "./routes/auth.router";
 
 const app = express();
 
@@ -24,7 +25,8 @@ const app = express();
     // stop application here
   }
 
-  app.use(queryParser());
+  app.use(queryParser);
+  app.use("/auth", authRouter);
   app.use("/api", userRouter);
 
   //   app.get("/", (req: Request, res: Response) => {

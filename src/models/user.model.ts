@@ -7,6 +7,7 @@ import {
 } from "../utils/models";
 
 import { SequelizeService } from "../services/sequelize.service";
+import { hashSync } from "bcrypt";
 
 export class User
   extends Model
@@ -30,17 +31,29 @@ User.init(
       __isSortable: true,
       __isFilterable: true,
     } as IAttributeWrapper<User>,
-    name: {
+    email: {
       type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
       __isSelectable: true,
       __isSortable: true,
       __isFilterable: true,
     } as IAttributeWrapper<User>,
-    age: {
-      type: DataTypes.INTEGER,
-      __isSelectable: true,
-      __isSortable: true,
-      __isFilterable: true,
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      set(value) {
+        this.setDataValue("password", hashSync(<string>value, 10));
+      },
+      validate: {
+        notEmpty: true,
+      },
+      __isSelectable: false,
+      __isSortable: false,
+      __isFilterable: false,
     } as IAttributeWrapper<User>,
   },
   {

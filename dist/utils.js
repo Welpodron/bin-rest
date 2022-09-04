@@ -1,23 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildFilter = void 0;
-var sequelize_1 = require("sequelize");
-var is_1 = require("./utils/is");
-var BASIC_OPERATIONS = ["eq", "ne"];
-var NUMBER_OPERATIONS = ["gt", "gte", "lt", "lte"];
-var STRING_OPERATIONS = ["startsWith", "endsWith", "substring"];
-var buildFilter = function (filters) {
-    var _filter = {};
-    filters.forEach(function (filter) {
+const sequelize_1 = require("sequelize");
+const is_1 = require("./utils/is");
+const BASIC_OPERATIONS = ["eq", "ne"];
+const NUMBER_OPERATIONS = ["gt", "gte", "lt", "lte"];
+const STRING_OPERATIONS = ["startsWith", "endsWith", "substring"];
+const buildFilter = (filters) => {
+    const _filter = {};
+    filters.forEach((filter) => {
         if (!filter.filters.length)
             return;
-        var field = filter.field;
+        const field = filter.field;
         _filter[field] = {};
-        filter.filters.forEach(function (filter) {
-            var operation = filter[0], comparison = filter[1];
+        filter.filters.forEach((filter) => {
+            const [operation, comparison] = filter;
             if (BASIC_OPERATIONS.includes(operation) ||
                 STRING_OPERATIONS.includes(operation)) {
-                var lastValue = (0, is_1.isArray)(comparison)
+                const lastValue = (0, is_1.isArray)(comparison)
                     ? comparison[comparison.length - 1]
                     : comparison;
                 if ((0, is_1.isNumber)(lastValue) ||

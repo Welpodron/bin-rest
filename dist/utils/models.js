@@ -1,54 +1,67 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildModelSort = exports.buildModelGet = exports.buildModelWhere = exports.getModelSortableFields = exports.getModelFilterableFields = exports.getModelSelectableFields = void 0;
-var sequelize_1 = require("sequelize");
-var is_1 = require("./is");
-var GENERIC_OPERATIONS = ["eq", "ne"];
-var NUMBER_OPERATIONS = ["gt", "gte", "lt", "lte"];
-var STRING_OPERATIONS = ["startsWith", "endsWith", "substring"];
+const sequelize_1 = require("sequelize");
+const is_1 = require("./is");
+const GENERIC_OPERATIONS = ["eq", "ne"];
+const NUMBER_OPERATIONS = ["gt", "gte", "lt", "lte"];
+const STRING_OPERATIONS = ["startsWith", "endsWith", "substring"];
 // export interface IModelWrapper extends Model {
 //   __getSpecialFields: (
 //     key: string
 //   ) => [string, ModelAttributeColumnOptions<Model<any, any>>][];
 // }
-var getModelSelectableFields = function (model) {
-    return model.__getSpecialFields("__isSelectable").map(function (field) { return field[0]; });
+// TODO: DRY
+const getModelSelectableFields = (model, _ignoreProtection) => {
+    if (_ignoreProtection)
+        return Object.entries(model.getAttributes()).map((field) => field[0]);
+    return model.__getSpecialFields("__isSelectable").map((field) => field[0]);
 };
 exports.getModelSelectableFields = getModelSelectableFields;
-var getModelFilterableFields = function (model) {
-    return model.__getSpecialFields("__isFilterable").map(function (field) { return ({
+const getModelFilterableFields = (model, _ignoreProtection) => {
+    if (_ignoreProtection)
+        return Object.entries(model.getAttributes()).map((field) => ({
+            field: field[0],
+            type: field[1].type,
+        }));
+    return model.__getSpecialFields("__isFilterable").map((field) => ({
         field: field[0],
         type: field[1].type,
-    }); });
+    }));
 };
 exports.getModelFilterableFields = getModelFilterableFields;
-var getModelSortableFields = function (model) {
-    return model.__getSpecialFields("__isSortable").map(function (field) { return field[0]; });
+const getModelSortableFields = (model, _ignoreProtection) => {
+    if (_ignoreProtection)
+        return Object.entries(model.getAttributes()).map((field) => field[0]);
+    return model.__getSpecialFields("__isSortable").map((field) => field[0]);
 };
 exports.getModelSortableFields = getModelSortableFields;
-var buildModelWhere = function (model, where) {
-    if (!(0, is_1.isObject)(where))
+const buildModelWhere = (config) => {
+    if (config._whereRawUnsafe != null)
+        return config._whereRawUnsafe;
+    if (!(0, is_1.isObject)(config.where))
         return undefined;
-    var result = {};
-    var filterableFields = (0, exports.getModelFilterableFields)(model);
-    filterableFields.forEach(function (filterableField) {
-        var fieldName = filterableField.field, fieldType = filterableField.type;
-        if (!where.hasOwnProperty(fieldName))
+    const result = {};
+    const filterableFields = (0, exports.getModelFilterableFields)(config.model, config._ignoreProtection);
+    filterableFields.forEach((filterableField) => {
+        const { field: fieldName, type: fieldType } = filterableField;
+        if (!config.where.hasOwnProperty(fieldName))
             return;
-        var filters = where[fieldName];
+        const filters = config.where[fieldName];
         if (!(0, is_1.isObject)(filters))
             return;
         result[fieldName] = {};
-        Object.entries(filters).forEach(function (filter) {
-            var operation = filter[0], comparison = filter[1];
-            var lastComparison = (0, is_1.isArray)(comparison)
+        Object.entries(filters).forEach((filter) => {
+            const [operation, comparison] = filter;
+            const lastComparison = (0, is_1.isArray)(comparison)
                 ? comparison[comparison.length - 1]
                 : comparison;
             if (GENERIC_OPERATIONS.includes(operation)) {
                 if ((0, is_1.isNumber)(lastComparison) ||
                     (0, is_1.isString)(lastComparison) ||
                     (0, is_1.isBoolean)(lastComparison)) {
-                    result[fieldName][sequelize_1.Op[operation]] = lastComparison;
+                    result[fieldName][sequelize_1.Op[operation]] =
+                        lastComparison;
                 }
                 return;
             }
@@ -82,13 +95,15 @@ var buildModelWhere = function (model, where) {
     return Object.keys(result).length ? result : undefined;
 };
 exports.buildModelWhere = buildModelWhere;
-var buildModelGet = function (model, get) {
-    if (!(0, is_1.isArray)(get))
-        return undefined;
-    var result = [];
-    var getUniqueized = new Set(get);
-    var selectableFields = (0, exports.getModelSelectableFields)(model);
-    getUniqueized.forEach(function (getUnique) {
+const buildModelGet = (config) => {
+    if (config._getRawUnsafe != null)
+        return config._getRawUnsafe;
+    const selectableFields = (0, exports.getModelSelectableFields)(config.model, config._ignoreProtection);
+    if (!(0, is_1.isArray)(config.get))
+        return selectableFields;
+    const result = [];
+    const getUniqueized = new Set(config.get);
+    getUniqueized.forEach((getUnique) => {
         if (!selectableFields.includes(getUnique))
             return;
         result.push(getUnique);
@@ -96,14 +111,16 @@ var buildModelGet = function (model, get) {
     return result.length ? result : selectableFields;
 };
 exports.buildModelGet = buildModelGet;
-var buildModelSort = function (model, sort) {
-    if (!(0, is_1.isObject)(sort))
+const buildModelSort = (config) => {
+    if (config._sortRawUnsafe != null)
+        return config._sortRawUnsafe;
+    if (!(0, is_1.isObject)(config.sort))
         return undefined;
-    var result = [];
-    var sortSliced = Object.entries(sort).slice(-2);
-    var sortableFields = (0, exports.getModelSortableFields)(model);
-    sortSliced.forEach(function (sortArr) {
-        var sortField = sortArr[0], sortDirection = sortArr[1];
+    const result = [];
+    const sortSliced = Object.entries(config.sort).slice(-2);
+    const sortableFields = (0, exports.getModelSortableFields)(config.model, config._ignoreProtection);
+    sortSliced.forEach((sortArr) => {
+        let [sortField, sortDirection] = sortArr;
         if (!sortableFields.includes(sortField))
             return;
         if (!(0, is_1.isString)(sortDirection))
