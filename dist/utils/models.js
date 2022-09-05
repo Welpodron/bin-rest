@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildModelSort = exports.buildModelGet = exports.buildModelWhere = exports.getModelSortableFields = exports.getModelFilterableFields = exports.getModelSelectableFields = void 0;
+exports.buildModelLimit = exports.buildModelSort = exports.buildModelGet = exports.buildModelWhere = exports.getModelSortableFields = exports.getModelFilterableFields = exports.getModelSelectableFields = void 0;
 const sequelize_1 = require("sequelize");
+const converter_1 = require("./converter");
 const is_1 = require("./is");
 const GENERIC_OPERATIONS = ["eq", "ne"];
 const NUMBER_OPERATIONS = ["gt", "gte", "lt", "lte"];
@@ -133,3 +134,11 @@ const buildModelSort = (config) => {
     return result.length ? result : undefined;
 };
 exports.buildModelSort = buildModelSort;
+const buildModelLimit = (config) => {
+    if (config._limitRawUnsafe != null)
+        return config._limitRawUnsafe;
+    if (!(0, is_1.isNumber)(config.limit))
+        return undefined;
+    return (0, converter_1.convertToNumber)(config.limit);
+};
+exports.buildModelLimit = buildModelLimit;

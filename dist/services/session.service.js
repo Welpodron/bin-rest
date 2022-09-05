@@ -1,26 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
-const user_model_1 = require("../models/user.model");
+exports.SessionService = void 0;
+const session_model_1 = require("../models/session.model");
 const models_1 = require("../utils/models");
-class UserService {
+class SessionService {
     static getAll = async (config) => {
         const attributes = (0, models_1.buildModelGet)({
-            model: user_model_1.User,
+            model: session_model_1.Session,
             get: config?.get,
             _ignoreProtection: config?._ignoreProtection,
             _getRaw: config?._getRaw,
             _getRawUnsafe: config?._getRawUnsafe,
         });
         const where = (0, models_1.buildModelWhere)({
-            model: user_model_1.User,
+            model: session_model_1.Session,
             where: config?.where,
             _ignoreProtection: config?._ignoreProtection,
             _whereRaw: config?._whereRaw,
             _whereRawUnsafe: config?._whereRawUnsafe,
         });
         const order = (0, models_1.buildModelSort)({
-            model: user_model_1.User,
+            model: session_model_1.Session,
             sort: config?.sort,
             _ignoreProtection: config?._ignoreProtection,
             _sortRaw: config?._sortRaw,
@@ -30,7 +30,7 @@ class UserService {
             limit: config?.limit,
             _limitRawUnsafe: config?._limitRawUnsafe,
         });
-        return await user_model_1.User.findAll({
+        return await session_model_1.Session.findAll({
             attributes,
             where,
             order,
@@ -39,7 +39,7 @@ class UserService {
     };
     static create = async (fields) => {
         try {
-            const user = await user_model_1.User.create(fields);
+            const session = await session_model_1.Session.create(fields);
         }
         catch (error) {
             console.error(error);
@@ -49,4 +49,4 @@ class UserService {
         }
     };
 }
-exports.UserService = UserService;
+exports.SessionService = SessionService;

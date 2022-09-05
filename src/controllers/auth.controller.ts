@@ -1,14 +1,35 @@
 import { Request, Response, NextFunction } from "express";
 
-import { UserService } from "../services/user.service";
+import { AuthService } from "../services/auth.service";
 
 export class AuthController {
   static login = async (req: Request, res: Response, next: NextFunction) => {
-    const user = await UserService.getOne({
-      where: { email: req.body.fields?.email },
+    const tokens = await AuthService.login({
+      email: req.body?.fields?.email,
+      password: req.body?.fields?.password,
+      fingerprint: (<any>req)?.fingerprint?.hash,
+      oldRefreshToken: req.cookies?.refreshToken,
     });
-    res.json(user);
+
+    if (!tokens) {
+      return res.json(false);
+    }
+
+    res.cookie("refreshToken", tokens.refreshToken.value, {
+      maxAge: tokens.refreshToken.maxAge,
+      httpOnly: true,
+    });
+    res.json({
+      accessToken: tokens.accessToken.value,
+      refreshToken: tokens.refreshToken.value,
+    });
   };
 
-  static logout = async () => {};
+  static logout = async (req: Request, res: Response, next: NextFunction) => {
+    // Await to delete session from db and clear cookies
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+    });
+    res.json(true);
+  };
 }

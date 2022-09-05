@@ -1,5 +1,3 @@
-import { CONFIG } from "../config";
-
 import { DataTypes, Model } from "sequelize";
 
 import {
@@ -9,12 +7,11 @@ import {
 } from "../utils/models";
 
 import { SequelizeService } from "../services/sequelize.service";
-import { hashSync } from "bcrypt";
-import { Session } from "./session.model";
+import { User } from "./user.model";
 
-export class User
+export class Session
   extends Model
-  implements TStaticImplements<IModelWrapper, typeof User>
+  implements TStaticImplements<IModelWrapper, typeof Session>
 {
   static __getSpecialFields = (key: string) => {
     return Object.entries(this.getAttributes()).filter((attribute) => {
@@ -22,12 +19,12 @@ export class User
       return (<any>options)[key];
     });
   };
-  declare id: number;
-  declare email: string;
-  declare password: string;
+  declare fingerprint: string;
+  declare refreshToken: string;
+  declare expiresIn: string; //??????
 }
 
-User.init(
+Session.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -36,38 +33,33 @@ User.init(
       __isSelectable: true,
       __isSortable: true,
       __isFilterable: true,
-    } as IAttributeWrapper<User>,
-    email: {
+    } as IAttributeWrapper<Session>,
+    fingerprint: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
-      __isSelectable: true,
-      __isSortable: true,
-      __isFilterable: true,
-    } as IAttributeWrapper<User>,
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      set(value) {
-        this.setDataValue(
-          "password",
-          hashSync(<string>value, CONFIG.BCRYPT_HASH_ROUNDS)
-        );
-      },
-      validate: {
-        notEmpty: true,
-      },
       __isSelectable: false,
       __isSortable: false,
       __isFilterable: false,
-    } as IAttributeWrapper<User>,
+    } as IAttributeWrapper<Session>,
+    refreshToken: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      __isSelectable: false,
+      __isSortable: false,
+      __isFilterable: false,
+    } as IAttributeWrapper<Session>,
+    expiresIn: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      __isSelectable: false,
+      __isSortable: false,
+      __isFilterable: false,
+      validate: {
+        isDate: true,
+      },
+    } as IAttributeWrapper<Session>,
   },
   {
     sequelize: SequelizeService,
   }
 );
-
-User.hasMany(Session);

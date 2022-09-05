@@ -14,7 +14,8 @@ const formidable_1 = __importDefault(require("formidable"));
 const formParser = (req, res, next) => {
     const form = (0, formidable_1.default)();
     form.parse(req, (error, fields, files) => {
-        console.error(error);
+        if (error)
+            console.error(error);
         req.body = { fields, files };
         next();
     });

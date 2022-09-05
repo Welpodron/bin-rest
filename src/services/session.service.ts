@@ -1,5 +1,4 @@
-import { User } from "../models/user.model";
-
+import { Session } from "../models/session.model";
 import {
   buildModelGet,
   buildModelWhere,
@@ -7,7 +6,7 @@ import {
   buildModelLimit,
 } from "../utils/models";
 
-export class UserService {
+export class SessionService {
   static getAll = async (config?: {
     _ignoreProtection?: boolean;
     _whereRawUnsafe?: any;
@@ -23,7 +22,7 @@ export class UserService {
     _limitRawUnsafe?: any;
   }) => {
     const attributes = buildModelGet({
-      model: User,
+      model: Session,
       get: config?.get,
       _ignoreProtection: config?._ignoreProtection,
       _getRaw: config?._getRaw,
@@ -31,7 +30,7 @@ export class UserService {
     });
 
     const where = buildModelWhere({
-      model: User,
+      model: Session,
       where: config?.where,
       _ignoreProtection: config?._ignoreProtection,
       _whereRaw: config?._whereRaw,
@@ -39,7 +38,7 @@ export class UserService {
     });
 
     const order = buildModelSort({
-      model: User,
+      model: Session,
       sort: config?.sort,
       _ignoreProtection: config?._ignoreProtection,
       _sortRaw: config?._sortRaw,
@@ -51,16 +50,16 @@ export class UserService {
       _limitRawUnsafe: config?._limitRawUnsafe,
     });
 
-    return await User.findAll({
+    return await Session.findAll({
       attributes,
       where,
       order,
       limit,
     });
   };
-  static create = async (fields: Record<any, string>) => {
+  static create = async (fields: Record<any, any>) => {
     try {
-      const user = await User.create(fields);
+      const session = await Session.create(fields);
     } catch (error) {
       console.error(error);
     } finally {

@@ -17,7 +17,7 @@ export const formParser = (req: Request, res: Response, next: NextFunction) => {
   const form = formidable();
 
   form.parse(req, (error, fields, files) => {
-    console.error(error);
+    if (error) console.error(error);
 
     req.body = { fields, files };
 

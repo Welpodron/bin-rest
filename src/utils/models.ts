@@ -5,6 +5,7 @@ import {
   DataTypes,
   DataType,
 } from "sequelize";
+import { convertToNumber } from "./converter";
 
 import { isObject, isArray, isString, isNumber, isBoolean } from "./is";
 
@@ -230,4 +231,15 @@ export const buildModelSort = (config: {
   });
 
   return result.length ? result : undefined;
+};
+
+export const buildModelLimit = (config: {
+  limit: any;
+  _limitRawUnsafe?: any;
+}) => {
+  if (config._limitRawUnsafe != null) return config._limitRawUnsafe;
+
+  if (!isNumber(config.limit)) return undefined;
+
+  return convertToNumber(config.limit);
 };

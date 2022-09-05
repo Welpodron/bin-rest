@@ -1,18 +1,25 @@
+import { CONFIG } from "./config";
+
 import express from "express";
-import { Request, Response } from "express";
+import cookieParser from "cookie-parser";
+
+import { errorHandler } from "./middlewares/handler";
 
 import { SequelizeService } from "./services/sequelize.service";
 
-import { buildFilter } from "./utils";
-
-import { queryParser, formParser } from "./middlewares/parser";
-
-import { isArray, isObject, isString } from "./utils/is";
+import { queryParser } from "./middlewares/parser";
 
 import { userRouter } from "./routes/user.router";
 import { authRouter } from "./routes/auth.router";
 
 const app = express();
+
+app.use(queryParser);
+app.use(cookieParser());
+app.use("/auth", authRouter);
+app.use("/api", userRouter);
+
+app.use(errorHandler);
 
 (async () => {
   try {
@@ -20,56 +27,12 @@ const app = express();
     console.log("Connection has been established successfully.");
     await SequelizeService.sync();
     console.log("All models were synchronized successfully.");
+
+    app.listen(CONFIG.SERVER_PORT, () => {
+      console.log(`Application started on localhost:${CONFIG.SERVER_PORT}`);
+    });
   } catch (error) {
     console.error("Unable to connect to the database:", error);
     // stop application here
   }
-
-  app.use(queryParser);
-  app.use("/auth", authRouter);
-  app.use("/api", userRouter);
-
-  //   app.get("/", (req: Request, res: Response) => {
-  //     const { filter, sort, get } = req.query;
-
-  //     // see: http://localhost:3000/?filter[name][eq]=2&filter[name][lt][nested1][nested2]=5
-
-  //     const _filters: Array<{ field: string; filters: Array<any> }> = [];
-
-  //     if (isObject(filter)) {
-  //       const filterableFields = Object.entries(
-  //         sequelize.models.User.getAttributes()
-  //       ).filter((attribute) => {
-  //         const [_, options] = attribute;
-
-  //         return (<any>options)?.__isFilterable;
-  //       });
-
-  //       filterableFields.forEach((filterableField) => {
-  //         const [fieldName, fieldOptions] = filterableField;
-
-  //         const requestField = (<Record<string, any>>filter)[fieldName];
-
-  //         if (requestField) {
-  //           const filters = Object.entries(requestField);
-
-  //           if (filters) {
-  //             _filters.push({ field: fieldName, filters });
-  //           }
-  //         }
-  //       });
-  //     }
-
-  //     res.send(
-  //       User.findAll({
-  //         attributes: _get.length ? _get : gettableFields,
-  //         where: buildFilter(_filters),
-  //         order: _sort,
-  //       })
-  //     );
-  //   });
-
-  app.listen(3000, () => {
-    //   console.log("Application started on 3000");
-  });
 })();
