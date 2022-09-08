@@ -8,7 +8,7 @@ const bcrypt_1 = require("bcrypt");
 const is_1 = require("../utils/is");
 class AuthService {
     static login = async (config) => {
-        throw new Error("Fuck you");
+        throw new Error("Nice error, time to implement center error handler");
         if (!(0, is_1.isString)(config.email) || !(0, is_1.isString)(config.password)) {
             return false;
         }

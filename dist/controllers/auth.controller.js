@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const auth_service_1 = require("../services/auth.service");
+const controllers_1 = require("../utils/controllers");
 class AuthController {
-    static login = async (req, res, next) => {
+    static login = (0, controllers_1.asyncControllerRequest)(async (req, res, next) => {
         const tokens = await auth_service_1.AuthService.login({
             email: req.body?.fields?.email,
             password: req.body?.fields?.password,
@@ -21,7 +22,7 @@ class AuthController {
             accessToken: tokens.accessToken.value,
             refreshToken: tokens.refreshToken.value,
         });
-    };
+    });
     static logout = async (req, res, next) => {
         // Await to delete session from db and clear cookies
         res.clearCookie("refreshToken", {

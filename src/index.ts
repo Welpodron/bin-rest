@@ -1,6 +1,6 @@
 import { CONFIG } from "./config";
 
-import express from "express";
+import express, { NextFunction, Response, Request } from "express";
 import cookieParser from "cookie-parser";
 
 import { errorHandler } from "./middlewares/handler";
