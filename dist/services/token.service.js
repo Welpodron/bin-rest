@@ -32,6 +32,8 @@ class TokenService {
             },
         };
     };
-    static verify = (token) => { };
+    static verify = (token, secret) => {
+        return jsonwebtoken_1.default.verify(token, secret);
+    };
 }
 exports.TokenService = TokenService;

@@ -59,12 +59,6 @@ export class UserService {
     });
   };
   static create = async (fields: Record<any, string>) => {
-    try {
-      const user = await User.create(fields);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      return 1;
-    }
+    return await User.create({ ...fields });
   };
 }

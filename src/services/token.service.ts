@@ -36,5 +36,7 @@ export class TokenService {
     };
   };
 
-  static verify = (token: any) => {};
+  static verify = (token: string, secret: string) => {
+    return jwt.verify(token, secret);
+  };
 }

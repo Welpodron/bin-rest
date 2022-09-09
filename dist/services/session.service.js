@@ -37,16 +37,26 @@ class SessionService {
             limit,
         });
     };
-    static create = async (fields) => {
-        try {
-            const session = await session_model_1.Session.create(fields);
-        }
-        catch (error) {
-            console.error(error);
-        }
-        finally {
-            return 1;
-        }
+    static create = async (config) => {
+        return await session_model_1.Session.create({ ...config.fields });
+    };
+    static delete = async (config) => {
+        const where = (0, models_1.buildModelWhere)({
+            model: session_model_1.Session,
+            where: config?.where,
+            _whereRaw: config?._whereRaw,
+            _whereRawUnsafe: config?._whereRawUnsafe,
+        });
+        return await session_model_1.Session.destroy({ where });
+    };
+    static update = async (config) => {
+        const where = (0, models_1.buildModelWhere)({
+            model: session_model_1.Session,
+            where: config?.where,
+            _whereRaw: config?._whereRaw,
+            _whereRawUnsafe: config?._whereRawUnsafe,
+        });
+        return await session_model_1.Session.update({ ...config.fields }, { where });
     };
 }
 exports.SessionService = SessionService;

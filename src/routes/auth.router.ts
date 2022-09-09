@@ -20,3 +20,5 @@ authRouter.use(
 authRouter.post("/login", formParser, AuthController.login);
 authRouter.post("/logout", AuthController.logout);
 authRouter.get("/logout", AuthController.logout);
+authRouter.post("/refresh", AuthController.refresh);
+authRouter.get("/refresh", AuthController.refresh);

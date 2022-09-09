@@ -18,3 +18,5 @@ exports.authRouter.use((0, express_fingerprint_1.default)([
 exports.authRouter.post("/login", parser_1.formParser, auth_controller_1.AuthController.login);
 exports.authRouter.post("/logout", auth_controller_1.AuthController.logout);
 exports.authRouter.get("/logout", auth_controller_1.AuthController.logout);
+exports.authRouter.post("/refresh", auth_controller_1.AuthController.refresh);
+exports.authRouter.get("/refresh", auth_controller_1.AuthController.refresh);

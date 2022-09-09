@@ -38,15 +38,7 @@ class UserService {
         });
     };
     static create = async (fields) => {
-        try {
-            const user = await user_model_1.User.create(fields);
-        }
-        catch (error) {
-            console.error(error);
-        }
-        finally {
-            return 1;
-        }
+        return await user_model_1.User.create({ ...fields });
     };
 }
 exports.UserService = UserService;

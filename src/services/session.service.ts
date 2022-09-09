@@ -57,13 +57,36 @@ export class SessionService {
       limit,
     });
   };
-  static create = async (fields: Record<any, any>) => {
-    try {
-      const session = await Session.create(fields);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      return 1;
-    }
+  static create = async (config: { fields: Record<any, any> }) => {
+    return await Session.create({ ...config.fields });
+  };
+  static delete = async (config: {
+    where?: any;
+    _whereRaw?: any;
+    _whereRawUnsafe?: any;
+  }) => {
+    const where = buildModelWhere({
+      model: Session,
+      where: config?.where,
+      _whereRaw: config?._whereRaw,
+      _whereRawUnsafe: config?._whereRawUnsafe,
+    });
+
+    return await Session.destroy({ where });
+  };
+  static update = async (config: {
+    fields: Record<any, any>;
+    where?: any;
+    _whereRaw?: any;
+    _whereRawUnsafe?: any;
+  }) => {
+    const where = buildModelWhere({
+      model: Session,
+      where: config?.where,
+      _whereRaw: config?._whereRaw,
+      _whereRawUnsafe: config?._whereRawUnsafe,
+    });
+
+    return await Session.update({ ...config.fields }, { where });
   };
 }
